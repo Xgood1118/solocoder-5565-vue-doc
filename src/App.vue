@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { watch, onMounted, onUnmounted } from 'vue'
-import { RouterView } from 'vue-router'
+import { RouterView, useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useUiStore } from '@/stores/ui'
 import { useDocumentsStore } from '@/stores/documents'
@@ -11,6 +11,8 @@ import { storeToRefs } from 'pinia'
 const authStore = useAuthStore()
 const uiStore = useUiStore()
 const documentsStore = useDocumentsStore()
+const router = useRouter()
+const route = useRoute()
 const { isLoggedIn, currentUser } = storeToRefs(authStore)
 const { shortcuts } = storeToRefs(uiStore)
 
@@ -94,6 +96,11 @@ watch(currentUser, async (user) => {
     await documentsStore.loadAllDocuments()
     await uiStore.loadTags()
     await uiStore.loadNotifications(user.id)
+
+    const redirect = (route.query.redirect as string) || '/'
+    if (route.path !== redirect) {
+      router.replace(redirect)
+    }
   }
 })
 </script>

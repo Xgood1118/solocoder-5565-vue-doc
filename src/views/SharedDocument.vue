@@ -70,7 +70,7 @@ const loadDocument = async (documentId: string) => {
 }
 
 const handleLogin = () => {
-  router.push('/login')
+  router.push('/')
 }
 
 const getRoleText = (role: PermissionRole) => {

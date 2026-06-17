@@ -181,26 +181,38 @@ export const useDocumentsStore = defineStore('documents', {
     },
     toggleEditorMode() {
       this.currentMode = this.currentMode === 'richtext' ? 'markdown' : 'richtext'
-      if (this.currentDocument) {
-        if (this.currentMode === 'markdown') {
-          this.currentDocument.blocks.forEach(b => {
-            if (!b.content && b.type !== 'divider' && b.type !== 'image' && b.type !== 'attachment') {
-              const md = blocksToMarkdown([b])
-              b.content = md
-            }
-          })
-        } else {
-          this.currentDocument.blocks.forEach(b => {
-            if (b.type === 'paragraph' && b.content.startsWith('#')) {
-              const blocks = markdownToBlocks(b.content)
-              if (blocks.length > 0) {
-                Object.assign(b, blocks[0])
-                b.id = b.id
-              }
-            }
-          })
-        }
+      if (!this.currentDocument) return
+
+      if (this.currentMode === 'markdown') {
+        this.currentDocument.blocks.forEach(b => {
+          if (b.type === 'divider') return
+          if (b.type === 'image' || b.type === 'attachment') return
+          const md = blocksToMarkdown([b])
+          b.content = md
+        })
+      } else {
+        const newBlocks: Block[] = []
+        this.currentDocument.blocks.forEach(b => {
+          if (b.type === 'divider') {
+            newBlocks.push(b)
+            return
+          }
+          if (b.type === 'image' || b.type === 'attachment') {
+            newBlocks.push(b)
+            return
+          }
+          const parsed = markdownToBlocks(b.content)
+          if (parsed.length > 0) {
+            newBlocks.push(...parsed)
+          } else {
+            newBlocks.push(b)
+          }
+        })
+        this.currentDocument.blocks = newBlocks
       }
+      this.currentDocument.updatedAt = Date.now()
+      this.markUnsaved()
+      this.pushHistory()
     },
     setEditorMode(mode: EditorMode) {
       this.currentMode = mode

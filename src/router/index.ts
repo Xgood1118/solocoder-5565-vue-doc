@@ -49,12 +49,6 @@ const routes: RouteRecordRaw[] = [
     name: 'SharedDocument',
     component: () => import('@/views/SharedDocument.vue'),
     meta: { requiresAuth: false }
-  },
-  {
-    path: '/login',
-    name: 'Login',
-    component: () => import('@/views/Login.vue'),
-    meta: { requiresAuth: false }
   }
 ]
 
@@ -66,7 +60,7 @@ const router = createRouter({
 router.beforeEach((to, _from, next) => {
   const userId = localStorage.getItem('currentUserId')
   if (to.meta.requiresAuth && !userId) {
-    next({ name: 'Login', query: { redirect: to.fullPath } })
+    next({ path: '/', query: { redirect: to.fullPath } })
   } else {
     next()
   }

@@ -1,7 +1,0 @@
-登录走不通。点身份卡认证确实登上了、localStorage 也写了，但 URL 留在 /login、登录那个紫色全屏浮层也不收回去盖住整个 AppLayout，登录完点新建/模板/任何按钮全被它拦掉，新用户登进来就是死路。
-
-另外多 tab 协作一进编辑器就抛 `BroadcastChannel: #<Object> could not be cloned.`，两个 tab 打开同一份文档互相看不见协作者头像，模拟多人那套卖点基本没起来。
-
-富文本和 Markdown 切换也是半残。toggleEditorMode 只对空 block 和以 # 开头的 paragraph 走转换，普通段落写完切到 markdown 完全没变化再切回来还是不变化，工具栏那个模式按钮基本是装饰。
-
-还有导出"Word (.docx)"其实把 HTML 包成 .doc 后缀存了，扩展名骗人、Word 打开会弹转换提示，跟真 docx 完全不是一回事。检查修复一下。

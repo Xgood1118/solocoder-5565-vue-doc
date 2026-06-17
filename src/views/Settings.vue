@@ -13,7 +13,7 @@ const activeTab = ref<'theme' | 'shortcuts' | 'account'>('theme')
 
 const handleLogout = () => {
   authStore.logout()
-  router.push('/login')
+  router.push('/')
 }
 
 const resetShortcuts = () => {

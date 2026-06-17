@@ -4,6 +4,11 @@ import { generateId } from './id'
 const COLLAB_CHANNEL = 'solo-doc-collab'
 
 let broadcastChannel: BroadcastChannel | null = null
+
+function safePost(data: any) {
+  if (!broadcastChannel) return
+  broadcastChannel.postMessage(JSON.parse(JSON.stringify(data)))
+}
 let tabId: string = generateId()
 let currentUser: User | null = null
 let currentDocumentId: string | null = null
@@ -140,7 +145,7 @@ export function getCollaborators(): Collaborator[] {
 
 export function sendCursorPosition(position: CursorPosition | null) {
   if (!broadcastChannel || !currentUser) return
-  broadcastChannel.postMessage({
+  safePost({
     type: 'cursor',
     fromTabId: tabId,
     documentId: currentDocumentId,
@@ -150,7 +155,7 @@ export function sendCursorPosition(position: CursorPosition | null) {
 
 export function sendSelection(selection: Selection | null) {
   if (!broadcastChannel || !currentUser) return
-  broadcastChannel.postMessage({
+  safePost({
     type: 'selection',
     fromTabId: tabId,
     documentId: currentDocumentId,
@@ -160,7 +165,7 @@ export function sendSelection(selection: Selection | null) {
 
 export function sendBlockUpdate(blockId: string, block: Partial<Block>) {
   if (!broadcastChannel || !currentUser) return
-  broadcastChannel.postMessage({
+  safePost({
     type: 'block-update',
     fromTabId: tabId,
     documentId: currentDocumentId,
@@ -171,7 +176,7 @@ export function sendBlockUpdate(blockId: string, block: Partial<Block>) {
 
 export function sendBlocksReorder(fromIndex: number, toIndex: number) {
   if (!broadcastChannel || !currentUser) return
-  broadcastChannel.postMessage({
+  safePost({
     type: 'blocks-reorder',
     fromTabId: tabId,
     documentId: currentDocumentId,
@@ -182,7 +187,7 @@ export function sendBlocksReorder(fromIndex: number, toIndex: number) {
 
 export function sendBlockCreate(block: Block, afterBlockId: string | null) {
   if (!broadcastChannel || !currentUser) return
-  broadcastChannel.postMessage({
+  safePost({
     type: 'block-create',
     fromTabId: tabId,
     documentId: currentDocumentId,
@@ -193,7 +198,7 @@ export function sendBlockCreate(block: Block, afterBlockId: string | null) {
 
 export function sendBlockDelete(blockId: string) {
   if (!broadcastChannel || !currentUser) return
-  broadcastChannel.postMessage({
+  safePost({
     type: 'block-delete',
     fromTabId: tabId,
     documentId: currentDocumentId,
@@ -203,7 +208,7 @@ export function sendBlockDelete(blockId: string) {
 
 function sendPresence() {
   if (!broadcastChannel || !currentUser || !currentDocumentId) return
-  broadcastChannel.postMessage({
+  safePost({
     type: 'presence',
     fromTabId: tabId,
     user: currentUser,
@@ -211,7 +216,7 @@ function sendPresence() {
     cursorPosition: null,
     selection: null
   })
-  broadcastChannel.postMessage({
+  safePost({
     type: 'request-presence',
     fromTabId: tabId
   })
@@ -219,7 +224,7 @@ function sendPresence() {
 
 function sendLeave() {
   if (!broadcastChannel || !currentDocumentId) return
-  broadcastChannel.postMessage({
+  safePost({
     type: 'leave',
     fromTabId: tabId,
     documentId: currentDocumentId
